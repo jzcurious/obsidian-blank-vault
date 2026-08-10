@@ -22,4 +22,6 @@ for DIR in plugins themes snippets; do
   fi
 done
 
+rm README.md LICENSE
+
 echo "✅ Done. Open vault in Obsidian and install plugins/themes."
