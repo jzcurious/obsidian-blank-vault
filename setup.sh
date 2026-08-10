@@ -7,10 +7,19 @@ SHARED="${XDG_DATA_HOME:-$HOME/.local/share}/obsidian-shared"
 
 mkdir -p "$SHARED/plugins" "$SHARED/themes" "$SHARED/snippets"
 
-rm -rf "$OBSIDIAN_DIR/plugins" "$OBSIDIAN_DIR/themes" "$OBSIDIAN_DIR/snippets"
-
-ln -s "$SHARED/plugins"  "$OBSIDIAN_DIR/plugins"
-ln -s "$SHARED/themes"   "$OBSIDIAN_DIR/themes"
-ln -s "$SHARED/snippets" "$OBSIDIAN_DIR/snippets"
+for DIR in plugins themes snippets; do
+  TARGET="$OBSIDIAN_DIR/$DIR"
+  if [ -L "$TARGET" ]; then
+    echo "⏭️  $DIR: symlink already exists, skipping"
+  elif [ -e "$TARGET" ]; then
+    echo "🗑️  $DIR: removing existing directory"
+    rm -rf "$TARGET"
+    ln -s "$SHARED/$DIR" "$TARGET"
+    echo "✅ $DIR: symlink created"
+  else
+    ln -s "$SHARED/$DIR" "$TARGET"
+    echo "✅ $DIR: symlink created"
+  fi
+done
 
 echo "✅ Done. Open vault in Obsidian and install plugins/themes."
