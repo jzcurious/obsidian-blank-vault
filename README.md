@@ -1,102 +1,102 @@
-# Obsidian Vault Template
+# obsidian-blank-vault
 
-This repository is a Linux-only template for creating Obsidian vaults with shared themes, plugins, and CSS snippets.
+![Version](https://img.shields.io/badge/version-v1.0.0-blue)
+![License](https://img.shields.io/github/license/jzcurious/obsidian-blank-vault)
 
-The goal is to avoid installing the same Obsidian plugins and themes separately for every single vault.
+A minimal [GitHub template](https://docs.github.com/en/repositories/creating-and-managing-repositories/creating-a-repository-from-a-template) for creating your own Obsidian vault repository with shared plugins, themes and snippets via symlinks.
 
 ## How it works
 
-Obsidian normally stores vault-specific configuration inside:
+Instead of keeping plugins, themes and snippets inside each vault separately, this script creates symlinks from `.obsidian/` to a single shared directory. This way all your vaults share the same plugins and themes without duplication.
 
-```text
-.obsidian/
+```
+~/.local/share/obsidian-shared/
+├── plugins/
+├── themes/
+└── snippets/
+
+my-vault/
+└── .obsidian/
+    ├── plugins  -> ~/.local/share/obsidian-shared/plugins
+    ├── themes   -> ~/.local/share/obsidian-shared/themes
+    └── snippets -> ~/.local/share/obsidian-shared/snippets
 ```
 
-This template keeps the following directories as symbolic links:
+## Getting started
 
-```text
-.obsidian/plugins   -> ~/.local/share/obsidian-shared/plugins
-.obsidian/themes    -> ~/.local/share/obsidian-shared/themes
-.obsidian/snippets  -> ~/.local/share/obsidian-shared/snippets
-```
+### Option 1 — GitHub Template (recommended)
 
-The shared location follows the standard XDG convention:
-
-```text
-${XDG_DATA_HOME:-$HOME/.local/share}/obsidian-shared
-```
-
-This means that all vaults created from this template will share the same installed plugins, themes, and snippets, saving disk space and configuration time.
-
-## Requirements
-
-- Linux
-- Bash
-- Git
-- Obsidian
-
-## Usage
-
-Since this is a template, you should create your own independent repository rather than cloning this one directly.
-
-**Step 1: Create your new repository**
-1. Click the green **Use this template** button at the top right of this repository's GitHub page.
-2. Select **Create a new repository**.
-3. Give your new repository a name (e.g., `my-project-vault`) and create it.
-
-**Step 2: Clone and set up locally**
-Clone *your newly created* repository to your local machine:
+1. Click **[Use this template](https://github.com/jzcurious/obsidian-blank-vault/generate)** on GitHub
+2. Create your own repository (e.g. `my-vault`)
+3. Clone it and run setup:
 
 ```bash
-git clone <your-new-repository-url>
-cd <your-repository-name>
-```
-
-**Step 3: Run the setup script**
-Make the script executable and run it to configure the symlinks:
-
-```bash
-chmod +x setup.sh
+git clone https://github.com/you/my-vault
+cd my-vault
 ./setup.sh
 ```
 
-**Step 4: Open in Obsidian**
-Finally, open the folder as a vault in Obsidian.
+### Option 2 — One-liner
 
-## What the setup script does
-
-The script creates the shared Obsidian directories on your system if they do not already exist:
-
-```text
-~/.local/share/obsidian-shared/plugins
-~/.local/share/obsidian-shared/themes
-~/.local/share/obsidian-shared/snippets
+```bash
+bash <(curl -s https://raw.githubusercontent.com/jzcurious/obsidian-blank-vault/v1.0.0/setup.sh)
 ```
 
-Then it replaces the local vault directories (`.obsidian/plugins`, etc.) with symbolic links pointing to the shared directories.
+With options:
 
-## Installing plugins and themes
-
-After running the setup script, you can install Obsidian plugins and themes normally through the Obsidian app.
-
-They will be stored in the global shared directory and instantly become available to all your other vaults that use this same setup.
-
-*Note: While the plugin files are shared, you may still need to go into Obsidian's settings to **enable** specific community plugins for each vault (this is stored in `community-plugins.json`).*
-
-## Important Git notes
-
-Do not commit the actual `plugins`, `themes`, or `snippets` directories into Git. They are machine-local shared resources.
-
-This template already includes them in `.gitignore`:
-
-```gitignore
-.obsidian/plugins/
-.obsidian/themes/
-.obsidian/snippets/
+```bash
+bash <(curl -s https://raw.githubusercontent.com/jzcurious/obsidian-blank-vault/v1.0.0/setup.sh) --vault ./my-vault --shared ~/my-shared
 ```
 
-The rest of the `.obsidian` configuration (like `app.json`, `appearance.json`, `community-plugins.json`) **should** be committed, as this allows you and your teammates to share the vault's general settings and the list of enabled plugins.
+> ⚠️ Always review the script before running it. `bash <(curl ...)` lets you do that — unlike `curl | bash` which runs it blindly.
 
-## Re-running setup
+### Option 3 — Clone manually
 
-It is completely safe to run `./setup.sh` multiple times. Existing symlinks will be automatically detected and skipped.
+```bash
+git clone --branch v1.0.0 https://github.com/jzcurious/obsidian-blank-vault my-vault
+cd my-vault
+./setup.sh
+```
+
+## Usage
+
+```bash
+./setup.sh [OPTIONS]
+```
+
+### Options
+
+| Option | Description | Default |
+|---|---|---|
+| `--vault <path>` | Path to the vault directory | Current directory |
+| `--shared <path>` | Path to the shared directory | `$XDG_DATA_HOME/obsidian-shared` |
+| `--help` | Show help message | |
+
+### Examples
+
+```bash
+# current directory as vault
+./setup.sh
+
+# specify vault path
+./setup.sh --vault ./my-vault
+
+# specify shared directory
+./setup.sh --shared ~/my-shared
+
+# both options (order doesn't matter)
+./setup.sh --vault ./my-vault --shared ~/my-shared
+```
+
+## Requirements
+
+- `bash`
+- `git`
+- [Obsidian](https://obsidian.md/)
+
+## Changelog
+
+### [v1.0.0](https://github.com/jzcurious/obsidian-blank-vault/releases/tag/v1.0.0)
+- Initial release
+- Symlinks for plugins, themes and snippets
+- `--vault` and `--shared` options
